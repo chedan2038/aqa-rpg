@@ -9,14 +9,14 @@ def map_generator(l=10, ep=60) -> list:
     :return:
     """
 
-    current_map = [*map_base.keys()]
-    enemy, empty = map_ents.keys()
+    current_map = [*map_base.values()]
+
 
     for i in range(l):
         if probability(ep):
-            current_map.insert(-1, enemy)
+            current_map.insert(-1, map_ents['enemy'])
         else:
-            current_map.insert(-1, empty)
+            current_map.insert(-1, map_ents['empty'])
 
     return current_map
 
