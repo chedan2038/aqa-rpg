@@ -1,14 +1,5 @@
 from base import probability
-
-map_ents = {
-    "E": "враг",
-    " ": "пустая комната"
-}
-
-map_base = {
-    "St": "стартовая точка",
-    "Ex": "выход из подземелья"
-}
+from .map_data import map_ents, map_base
 
 
 def map_generator(l=10, ep=60) -> list:
@@ -28,6 +19,4 @@ def map_generator(l=10, ep=60) -> list:
             current_map.insert(-1, empty)
 
     return current_map
-
-
 
