@@ -11,7 +11,6 @@ def map_generator(l=10, ep=60) -> list:
 
     current_map = [*map_base.values()]
 
-
     for i in range(l):
         if probability(ep):
             current_map.insert(-1, map_ents['enemy'])
@@ -19,4 +18,3 @@ def map_generator(l=10, ep=60) -> list:
             current_map.insert(-1, map_ents['empty'])
 
     return current_map
-
