@@ -1,9 +1,9 @@
 import random
 
 from armor import Armor
-from player_data import *
 from entity import Entity
 from weapon import Weapon
+from .player_data import *
 
 
 class Player:
@@ -16,7 +16,6 @@ class Player:
         self.entity = Entity(player_type)
         self.armor = Armor(random.choice(list(player_armor.values())))
         self.weapon = Weapon(random.choice(list(player_weapon.values())))
-
 
 # x = Player()
 # x.generate_player()

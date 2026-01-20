@@ -1,7 +1,7 @@
 import random
 
 from armor import Armor
-from enemy_data import *
+from .enemy_data import *
 from entity import Entity
 from weapon import Weapon
 
