@@ -1,4 +1,5 @@
 from base import probability
+from enemy.enemy import Enemy
 from game_map.room import Room
 from player.player import Player
 
@@ -32,7 +33,7 @@ class PlayerController:
 
     def _available_actions(self):
         actions = [("Пойти дальше", self._move_forward), ("Вернутся назад", self._move_back),
-                   ("Атаковать", self._attack), ("Выйти из подземелья", self._exit_dungeon)]
+                   ("Атаковать", self._fight), ("Выйти из подземелья", self._exit_dungeon)]
         # убрать
 
         available_actions = []
@@ -61,39 +62,75 @@ class PlayerController:
         print('выход')
         self.game.game_status = False
 
-    def _attack(self):
-        # пофиксить дублирование
+    def _fight(self):
 
-        while self.player.entity.health >= 0 and self.rooms_list[self.current_room].enemy.entity.health >= 0:
+        player = self.player
+        enemy = self.rooms_list[self.current_room].enemy
 
-            print('p', self.player.entity.health, 'e', self.rooms_list[self.current_room].enemy.entity.health)
+        """
+        f'"{attacker}" наносит удар'   attack_msg
+        print(f'Удар пришелся точно в цель! "{attacker}" нанес "{damage}" единицы урона по "{defender.entity.name}".' hit msg
+         f'"{attacker}" не смог пробить {defender.armor.name}'  fail_msg
+         f'"{defender.entity.name}" смог уклониться от удара {attacker.entity.name} .' dodge_msg
+         f'здоровье {defender.entity.name} {defender.entity.health}' health
 
-            if probability(self.player.weapon.hitting_chance):
-                # print('ты попал')
-                if self.player.weapon.damage > self.rooms_list[self.current_room].enemy.armor.protection:
-                    self.rooms_list[self.current_room].enemy.entity.health = self.rooms_list[
-                                                                                 self.current_room].enemy.entity.health - (
-                                                                                         self.player.weapon.damage -
-                                                                                         self.rooms_list[
-                                                                                             self.current_room].enemy.armor.protection)
-                elif self.player.weapon.damage < self.rooms_list[self.current_room].enemy.armor.protection:
-                    print('без урона')
-            else:
-                print('ты промазал')
+        """
 
-            if probability(self.rooms_list[self.current_room].enemy.weapon.hitting_chance):
-                # print('враг попал')
-                if self.rooms_list[self.current_room].enemy.weapon.damage > self.player.armor.protection:
-                    self.player.entity.health = self.player.entity.health - (
-                                self.rooms_list[self.current_room].enemy.weapon.damage - self.player.armor.protection)
-                elif self.rooms_list[self.current_room].enemy.weapon.damage < self.player.armor.protection:
-                    print('без урона')
-            else:
-                print('враг промазал')
+        print(player.entity.name, player.entity.health)
+        print(enemy.entity.name, enemy.entity.health)
+        print('Вы решительно бросаетесь на противника! Завязался бой:')
 
-        if self.player.entity.health > self.rooms_list[self.current_room].enemy.entity.health:
-            self.rooms_list[self.current_room].enemy = None
-            print('Ты победил')
+        while enemy.entity.health > 0 and player.entity.health > 0:
+
+            self._attack(
+                player,
+                enemy,
+                f'Вы наносите удар!',
+                f'Удар пришелся точно в цель! Вы нанесли',
+                f'урона по цели "{enemy.entity.name}".',
+                f'Вы не смогли пробить броню "{enemy.armor.name}".',
+                f'{enemy.entity.name} смог увернуться от вашего удара.'
+            )
+
+            if enemy.entity.health == 0:
+                print(f'Вы одержали победу над "{enemy.entity.name}"! {enemy.entity.death_description}')
+                self.rooms_list[self.current_room].enemy = None
+                break
+
+            self._attack(
+                enemy,
+                player,
+                f'"{enemy.entity.name}" наносит ответный удар. Берегись!',
+                f'На этот раз вы не смогли увернуться... "{enemy.entity.name}" нанес вам',
+                f'урона.',
+                f'Удар был тяжелым, но ваша броня выдержала. Удар не нанес вам урона.',
+                f'Удар был внезапным, но вы смогли увернуться. Оружие пролетело в сантиметре от вашего лица.'
+            )
+
+            if player.entity.health == 0:
+                print(f'{player.entity.death_description}')
+                self.game.game_status = False
+                break
+
+    def _attack(
+            self,
+            attacker: Player | Enemy,
+            defender: Player | Enemy,
+            attack_msg: str,
+            hit_msg_1: str,
+            hit_msg_2: str,
+            fail_msg: str,
+            dodge_msg: str
+    ):
+
+        print(attack_msg)
+        if probability(attacker.weapon.hitting_chance):
+            if attacker.weapon.damage > defender.armor.protection:
+                damage = attacker.weapon.damage - defender.armor.protection
+                defender.entity.health = 0 if defender.entity.health - damage < 0 else defender.entity.health - damage
+                print(f'{hit_msg_1} "{damage}" {hit_msg_2}')
+            elif attacker.weapon.damage < defender.armor.protection:
+                print(fail_msg)
         else:
-            print('Ты проиграл')
-            self._exit_dungeon()
+            print(dodge_msg)
+        print(f'"{defender.entity.name}": {defender.entity.health}')
