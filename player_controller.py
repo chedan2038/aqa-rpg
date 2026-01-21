@@ -1,15 +1,15 @@
 from base import probability
-from enemy.enemy import Enemy
 from game_map.room import Room
 from player.player import Player
 
 
 class PlayerController:
 
-    def __init__(self, rooms_list: list[Room], player: Player):
+    def __init__(self, rooms_list: list[Room], player: Player, game):
         self.rooms_list = rooms_list
-        self.current_room = 1
+        self.current_room = 2
         self.player = player
+        self.game = game
 
     def controller(self):
         """Доступные действия:
@@ -59,9 +59,10 @@ class PlayerController:
 
     def _exit_dungeon(self):
         print('выход')
+        self.game.game_status = False
 
     def _attack(self):
-        #пофиксить дублирование
+        # пофиксить дублирование
 
         while self.player.entity.health >= 0 and self.rooms_list[self.current_room].enemy.entity.health >= 0:
 
@@ -70,7 +71,11 @@ class PlayerController:
             if probability(self.player.weapon.hitting_chance):
                 # print('ты попал')
                 if self.player.weapon.damage > self.rooms_list[self.current_room].enemy.armor.protection:
-                    self.rooms_list[self.current_room].enemy.entity.health = self.rooms_list[self.current_room].enemy.entity.health - (self.player.weapon.damage - self.rooms_list[self.current_room].enemy.armor.protection)
+                    self.rooms_list[self.current_room].enemy.entity.health = self.rooms_list[
+                                                                                 self.current_room].enemy.entity.health - (
+                                                                                         self.player.weapon.damage -
+                                                                                         self.rooms_list[
+                                                                                             self.current_room].enemy.armor.protection)
                 elif self.player.weapon.damage < self.rooms_list[self.current_room].enemy.armor.protection:
                     print('без урона')
             else:
@@ -79,7 +84,8 @@ class PlayerController:
             if probability(self.rooms_list[self.current_room].enemy.weapon.hitting_chance):
                 # print('враг попал')
                 if self.rooms_list[self.current_room].enemy.weapon.damage > self.player.armor.protection:
-                    self.player.entity.health = self.player.entity.health - (self.rooms_list[self.current_room].enemy.weapon.damage - self.player.armor.protection)
+                    self.player.entity.health = self.player.entity.health - (
+                                self.rooms_list[self.current_room].enemy.weapon.damage - self.player.armor.protection)
                 elif self.rooms_list[self.current_room].enemy.weapon.damage < self.player.armor.protection:
                     print('без урона')
             else:
