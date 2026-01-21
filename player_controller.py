@@ -7,7 +7,7 @@ class PlayerController:
 
     def __init__(self, rooms_list: list[Room], player: Player, game):
         self.rooms_list = rooms_list
-        self.current_room = 2
+        self.current_room = 0
         self.player = player
         self.game = game
 
@@ -39,7 +39,7 @@ class PlayerController:
 
         if self.current_room == 0:
             available_actions.append(actions[0])
-        elif self.current_room == len(self.rooms_list) - 1:
+        elif self.current_room == len(self.rooms_list):
             available_actions.append(actions[1])
             available_actions.append(actions[3])
         elif self.rooms_list[self.current_room].enemy:
