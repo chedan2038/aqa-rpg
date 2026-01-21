@@ -92,6 +92,8 @@ class PlayerController:
                 print('враг промазал')
 
         if self.player.entity.health > self.rooms_list[self.current_room].enemy.entity.health:
+            self.rooms_list[self.current_room].enemy = None
             print('Ты победил')
         else:
             print('Ты проиграл')
+            self._exit_dungeon()
