@@ -1,4 +1,5 @@
 from base import probability
+from cfg import RED, GREEN, RESET
 from enemy.enemy import Enemy
 from game_map.room import Room
 from player.player import Player
@@ -40,7 +41,7 @@ class PlayerController:
 
         if self.current_room == 0:
             available_actions.append(actions[0])
-        elif self.current_room == len(self.rooms_list):
+        elif self.current_room == len(self.rooms_list) - 1:
             available_actions.append(actions[1])
             available_actions.append(actions[3])
         elif self.rooms_list[self.current_room].enemy:
@@ -76,8 +77,11 @@ class PlayerController:
 
         """
 
-        print(player.entity.name, player.entity.health)
-        print(enemy.entity.name, enemy.entity.health)
+        bar = self._hp_bar(player.entity.health, player.entity.max_health, fill_color=GREEN, empty_color=GREEN)
+        bar_2 = self._hp_bar(enemy.entity.health, enemy.entity.max_health, fill_color=RED, empty_color=RED)
+        print(f'"{player.entity.name}". Здоровье: {player.entity.health}/{player.entity.max_health}\n{bar}')
+        print(f'"{enemy.entity.name}". Здоровье: {enemy.entity.health}/{enemy.entity.max_health}\n{bar_2}')
+
         print('Вы решительно бросаетесь на противника! Завязался бой:')
 
         while enemy.entity.health > 0 and player.entity.health > 0:
@@ -93,7 +97,7 @@ class PlayerController:
             )
 
             if enemy.entity.health == 0:
-                print(f'Вы одержали победу над "{enemy.entity.name}"! {enemy.entity.death_description}')
+                print(f'Вы одержали победу над противником "{enemy.entity.name}"! {enemy.entity.death_description}')
                 self.rooms_list[self.current_room].enemy = None
                 break
 
@@ -133,4 +137,26 @@ class PlayerController:
                 print(fail_msg)
         else:
             print(dodge_msg)
-        print(f'"{defender.entity.name}": {defender.entity.health}')
+
+        bar_color = GREEN if isinstance(attacker, Enemy) else RED
+        bar = self._hp_bar(defender.entity.health, defender.entity.max_health, fill_color=bar_color,
+                           empty_color=bar_color)
+        print(f'"{defender.entity.name}". Здоровье: {defender.entity.health}/{defender.entity.max_health}\n{bar}')
+
+    def _hp_bar(
+            self,
+            current: int,
+            maximum: int,
+            length: int = 20,
+            fill_color: str = GREEN,
+            empty_color: str = RED
+    ) -> str:
+        ratio = current / maximum if maximum > 0 else 0
+        filled = int(length * ratio)
+        empty = length - filled
+
+        return (
+            f'{fill_color}{"█" * filled}'
+            f'{empty_color}{"░" * empty}'
+            f'{RESET}'
+        )
