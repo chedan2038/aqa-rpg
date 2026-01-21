@@ -7,6 +7,7 @@ class Entity:
         self.health = entity['health']
         self.description = self.rand_entity(entity,'description')
         self.death_description = self.rand_entity(entity,'death_description')
+        self.max_health = self.health
 
     def rand_entity(self, entity: dict, attr: str):
         if isinstance(entity[attr], list):
