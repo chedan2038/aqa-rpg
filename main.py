@@ -11,16 +11,20 @@ class Game:
 
     def run(self):
         print('\n')
-        map = map_generator()
-        print(map)
+        game_map = map_generator()
+        # print(map)
         print('\n')
 
-        rooms = room_generator(map)
+        rooms = room_generator(game_map)
         player = Player()
         player.generate_player()
+        player_controller = PlayerController(rooms,player,game_map, self)
+
+        print(f'Вы: "{player.entity.name}"')
+        print(f'В ваших руках: "{player.weapon.description}"')
+        print(f'На вас: "{player.armor.description}"')
 
 
-        player_controller = PlayerController(rooms,player, self)
 
         while player.entity.health > 0 and self.game_status:
             player_controller.controller()

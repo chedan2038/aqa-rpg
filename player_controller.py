@@ -1,16 +1,19 @@
 from base import probability
 from cfg import RED, GREEN, RESET
 from enemy.enemy import Enemy
+from game_map.game_map import show_position_on_map
+from game_map.map_data import map_ents
 from game_map.room import Room
 from player.player import Player
 
 
 class PlayerController:
 
-    def __init__(self, rooms_list: list[Room], player: Player, game):
+    def __init__(self, rooms_list: list[Room], player: Player, game_map: list[str], game):
         self.rooms_list = rooms_list
         self.current_room = 0
         self.player = player
+        self.game_map = game_map
         self.game = game
 
     def controller(self):
@@ -20,17 +23,27 @@ class PlayerController:
                     3. Атаковать
                     4. Выйти из подземелья"""
 
+        print('\n')
+        show_position_on_map(self.game_map, self.current_room)
+
+        print(f'Перед вами: {self.rooms_list[self.current_room].room_type}')
+        if self.rooms_list[self.current_room].enemy is not None:
+            print(f'Оказалось, что вы здесь не одни: {self.rooms_list[self.current_room].enemy.entity.description}')
+            print(
+                f'В его руках: {self.rooms_list[self.current_room].enemy.weapon.description}')
+            print(f'На нём: {self.rooms_list[self.current_room].enemy.armor.description}')
+
         print('Доступные действия:')
         available = self._available_actions()
         for k, v in available.items():
             print(f'    {k}. {v[0]}')
 
-        player_action = int(input())
+        player_action = input()
 
-        if player_action in available:
-            available[player_action][1]()
+        if player_action.isdigit() and int(player_action) in available:
+            available[int(player_action)][1]()
         else:
-            print('Нет такого действия, сынок')
+            print(f'Нет такого действия, {self.player.entity.name}.\nНа чем мы остановились? Ах, да...\n')
 
     def _available_actions(self):
         actions = [("Пойти дальше", self._move_forward), ("Вернутся назад", self._move_back),
@@ -68,15 +81,6 @@ class PlayerController:
         player = self.player
         enemy = self.rooms_list[self.current_room].enemy
 
-        """
-        f'"{attacker}" наносит удар'   attack_msg
-        print(f'Удар пришелся точно в цель! "{attacker}" нанес "{damage}" единицы урона по "{defender.entity.name}".' hit msg
-         f'"{attacker}" не смог пробить {defender.armor.name}'  fail_msg
-         f'"{defender.entity.name}" смог уклониться от удара {attacker.entity.name} .' dodge_msg
-         f'здоровье {defender.entity.name} {defender.entity.health}' health
-
-        """
-
         bar = self._hp_bar(player.entity.health, player.entity.max_health, fill_color=GREEN, empty_color=GREEN)
         bar_2 = self._hp_bar(enemy.entity.health, enemy.entity.max_health, fill_color=RED, empty_color=RED)
         print(f'"{player.entity.name}". Здоровье: {player.entity.health}/{player.entity.max_health}\n{bar}')
@@ -99,6 +103,7 @@ class PlayerController:
             if enemy.entity.health == 0:
                 print(f'Вы одержали победу над противником "{enemy.entity.name}"! {enemy.entity.death_description}')
                 self.rooms_list[self.current_room].enemy = None
+                self.game_map[self.current_room] = map_ents['empty']
                 break
 
             self._attack(
