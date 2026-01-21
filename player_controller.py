@@ -28,7 +28,8 @@ class PlayerController:
 
         print(f'Перед вами: {self.rooms_list[self.current_room].room_type}')
         if self.rooms_list[self.current_room].enemy is not None:
-            print(f'Оказалось, что вы здесь не одни: {self.rooms_list[self.current_room].enemy.entity.description}')
+            print(
+                f'Оказалось, что вы здесь не одни: {self.rooms_list[self.current_room].enemy.entity.name}... {self.rooms_list[self.current_room].enemy.entity.description}')
             print(
                 f'В его руках: {self.rooms_list[self.current_room].enemy.weapon.description}')
             print(f'На нём: {self.rooms_list[self.current_room].enemy.armor.description}')
@@ -73,7 +74,7 @@ class PlayerController:
         self.current_room -= 1
 
     def _exit_dungeon(self):
-        print('выход')
+        print('\nВы покинули это проклятое место. Время перевязать раны и двигаться дальше...')
         self.game.game_status = False
 
     def _fight(self):
@@ -81,10 +82,10 @@ class PlayerController:
         player = self.player
         enemy = self.rooms_list[self.current_room].enemy
 
-        bar = self._hp_bar(player.entity.health, player.entity.max_health, fill_color=GREEN, empty_color=GREEN)
-        bar_2 = self._hp_bar(enemy.entity.health, enemy.entity.max_health, fill_color=RED, empty_color=RED)
-        print(f'"{player.entity.name}". Здоровье: {player.entity.health}/{player.entity.max_health}\n{bar}')
-        print(f'"{enemy.entity.name}". Здоровье: {enemy.entity.health}/{enemy.entity.max_health}\n{bar_2}')
+        self._hp_bar(player, fill_color=GREEN,
+                     empty_color=GREEN)
+        self._hp_bar(enemy, fill_color=RED,
+                     empty_color=RED)
 
         print('Вы решительно бросаетесь на противника! Завязался бой:')
 
@@ -136,7 +137,7 @@ class PlayerController:
         if probability(attacker.weapon.hitting_chance):
             if attacker.weapon.damage > defender.armor.protection:
                 damage = attacker.weapon.damage - defender.armor.protection
-                defender.entity.health = 0 if defender.entity.health - damage < 0 else defender.entity.health - damage
+                defender.entity.health = max(defender.entity.health - damage, 0)
                 print(f'{hit_msg_1} "{damage}" {hit_msg_2}')
             elif attacker.weapon.damage < defender.armor.protection:
                 print(fail_msg)
@@ -144,24 +145,23 @@ class PlayerController:
             print(dodge_msg)
 
         bar_color = GREEN if isinstance(attacker, Enemy) else RED
-        bar = self._hp_bar(defender.entity.health, defender.entity.max_health, fill_color=bar_color,
+        self._hp_bar(defender,fill_color=bar_color,
                            empty_color=bar_color)
-        print(f'"{defender.entity.name}". Здоровье: {defender.entity.health}/{defender.entity.max_health}\n{bar}')
+
 
     def _hp_bar(
             self,
-            current: int,
-            maximum: int,
+            character: Player | Enemy,
             length: int = 20,
             fill_color: str = GREEN,
             empty_color: str = RED
-    ) -> str:
-        ratio = current / maximum if maximum > 0 else 0
+    ) -> None:
+        ratio = character.entity.health / character.entity.max_health if character.entity.max_health > 0 else 0
         filled = int(length * ratio)
         empty = length - filled
 
-        return (
-            f'{fill_color}{"█" * filled}'
-            f'{empty_color}{"░" * empty}'
-            f'{RESET}'
-        )
+        bar = f'{fill_color}{"█" * filled}{empty_color}{"░" * empty}{RESET}'
+        print(f'"{character.entity.name}". Здоровье: {character.entity.health}/{character.entity.max_health}\n{bar}')
+
+
+
