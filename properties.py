@@ -1,7 +1,7 @@
 import random
 
 
-class Entity:
+class Properties:
     def __init__(self, entity: dict):
         self.name = self.rand_entity(entity,'name')
         self.health = entity['health']

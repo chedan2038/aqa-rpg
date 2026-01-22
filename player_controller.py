@@ -28,7 +28,7 @@ class PlayerController:
         print(f'Перед вами: {self.rooms_list[self.current_room].room_type}')
         if self.rooms_list[self.current_room].enemy is not None:
             print(
-                f'Оказалось, что вы здесь не одни: {self.rooms_list[self.current_room].enemy.entity.name}... {self.rooms_list[self.current_room].enemy.entity.description}')
+                f'Оказалось, что вы здесь не одни: {self.rooms_list[self.current_room].enemy.properties.name}... {self.rooms_list[self.current_room].enemy.properties.description}')
             print(
                 f'В его руках: {self.rooms_list[self.current_room].enemy.weapon.description}')
             print(f'На нём: {self.rooms_list[self.current_room].enemy.armor.description}')
@@ -43,7 +43,7 @@ class PlayerController:
         if player_action.isdigit() and int(player_action) in available:
             available[int(player_action)][1]()
         else:
-            print(f'Нет такого действия, {self.player.entity.name}.\nНа чем мы остановились? Ах, да...\n')
+            print(f'Нет такого действия, {self.player.properties.name}.\nНа чем мы остановились? Ах, да...\n')
 
     def _available_actions(self):
         actions = [("Пойти дальше", self._move_forward), ("Вернутся назад", self._move_back),
@@ -88,20 +88,20 @@ class PlayerController:
 
         print('Вы решительно бросаетесь на противника! Завязался бой:')
 
-        while enemy.entity.health > 0 and player.entity.health > 0:
+        while enemy.properties.health > 0 and player.properties.health > 0:
 
             self._attack(
                 player,
                 enemy,
                 f'Вы наносите удар!',
                 f'Удар пришелся точно в цель! Вы нанесли',
-                f'урона по цели "{enemy.entity.name}".',
+                f'урона по цели "{enemy.properties.name}".',
                 f'Вы не смогли пробить броню "{enemy.armor.name}".',
-                f'{enemy.entity.name} смог увернуться от вашего удара.'
+                f'{enemy.properties.name} смог увернуться от вашего удара.'
             )
 
-            if enemy.entity.health == 0:
-                print(f'Вы одержали победу над противником "{enemy.entity.name}"! {enemy.entity.death_description}')
+            if enemy.properties.health == 0:
+                print(f'Вы одержали победу над противником "{enemy.properties.name}"! {enemy.properties.death_description}')
                 self.rooms_list[self.current_room].enemy = None
                 self.game_map[self.current_room] = load_json('game_map/map_data.json')['entities']['empty']
                 break
@@ -109,15 +109,15 @@ class PlayerController:
             self._attack(
                 enemy,
                 player,
-                f'"{enemy.entity.name}" наносит ответный удар. Берегись!',
-                f'На этот раз вы не смогли увернуться... "{enemy.entity.name}" нанес вам',
+                f'"{enemy.properties.name}" наносит ответный удар. Берегись!',
+                f'На этот раз вы не смогли увернуться... "{enemy.properties.name}" нанес вам',
                 f'урона.',
                 f'Удар был тяжелым, но ваша броня выдержала. Удар не нанес вам урона.',
                 f'Удар был внезапным, но вы смогли увернуться. Оружие пролетело в сантиметре от вашего лица.'
             )
 
-            if player.entity.health == 0:
-                print(f'{player.entity.death_description}')
+            if player.properties.health == 0:
+                print(f'{player.properties.death_description}')
                 self.game.game_status = False
                 break
 
@@ -136,7 +136,7 @@ class PlayerController:
         if probability(attacker.weapon.hitting_chance):
             if attacker.weapon.damage > defender.armor.protection:
                 damage = attacker.weapon.damage - defender.armor.protection
-                defender.entity.health = max(defender.entity.health - damage, 0)
+                defender.properties.health = max(defender.properties.health - damage, 0)
                 print(f'{hit_msg_1} "{damage}" {hit_msg_2}')
             elif attacker.weapon.damage < defender.armor.protection:
                 print(fail_msg)
@@ -164,12 +164,12 @@ class PlayerController:
         :return:
         """
 
-        ratio = character.entity.health / character.entity.max_health if character.entity.max_health > 0 else 0
+        ratio = character.properties.health / character.properties.max_health if character.properties.max_health > 0 else 0
         filled = int(length * ratio)
         empty = length - filled
 
         bar = f'{fill_color}{"█" * filled}{empty_color}{"░" * empty}{RESET}'
-        print(f'"{character.entity.name}". Здоровье: {character.entity.health}/{character.entity.max_health}\n{bar}')
+        print(f'"{character.properties.name}". Здоровье: {character.properties.health}/{character.properties.max_health}\n{bar}')
 
 
 
