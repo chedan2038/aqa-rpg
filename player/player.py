@@ -1,11 +1,11 @@
 import random
 
 from armor import Armor
-from base import probability
+from base import probability, load_json
 from enemy.enemy import Enemy
 from entity import Entity
 from weapon import Weapon
-from .player_data import *
+
 
 
 class Player:
@@ -15,6 +15,8 @@ class Player:
         self.weapon = None
 
     def generate_player(self):
-        self.entity = Entity(player_type)
-        self.armor = Armor(random.choice(list(player_armor.values())))
-        self.weapon = Weapon(random.choice(list(player_weapon.values())))
+        player_data = load_json('player/player_data.json')
+        self.entity = Entity(random.choice(list(player_data['type'])))
+        self.armor = Armor(random.choice(list(player_data['armor'])))
+        self.weapon = Weapon(random.choice(list(player_data['weapon'])))
+

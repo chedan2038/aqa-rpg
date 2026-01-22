@@ -1,30 +1,27 @@
-from base import probability
-from cfg import RED,GREEN,RESET
-from .map_data import map_ents, map_base
+from base import probability, load_json
+from cfg import RED, GREEN, RESET
 
 
-def map_generator(l=10, ep=40) -> list:
+def map_generator(l=3, ep=40) -> list:
     """
     :param l: кол-во комнат без учета входа и выхода
     :param ep: вероятность появления противника
     :return:
     """
 
-    current_map = [*map_base.values()]
+    map_data = load_json('game_map/map_data.json')
+    current_map = [map_data['base']['start'], map_data['base']['exit']]
 
     for i in range(l):
         if probability(ep):
-            current_map.insert(-1, map_ents['enemy'])
+            current_map.insert(-1, map_data['entities']['enemy'])
         else:
-            current_map.insert(-1, map_ents['empty'])
+            current_map.insert(-1, map_data['entities']['empty'])
 
     return current_map
 
 
-
-
-def show_position_on_map(game_map: list[str], current_room:int):
-
+def show_position_on_map(game_map: list[str], current_room: int):
     row1 = ''
     for tile in game_map:
         if tile == 'E':

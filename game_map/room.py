@@ -1,9 +1,7 @@
 import random
 
+from base import load_json
 from enemy.enemy import Enemy
-from game_map.map_data import map_ents, rooms_type
-
-
 
 
 class Room:
@@ -11,15 +9,17 @@ class Room:
         self.enemy = enemy
         self.room_type = room_type
 
-def room_generator(game_map: list)-> list[Room]:
+
+def room_generator(game_map: list) -> list[Room]:
     rooms = []
+    map_data = load_json('game_map/map_data.json')
 
     for r in game_map:
-        if r == map_ents['enemy']:
+        if r == map_data['entities']['enemy']:
             enemy = Enemy()
             enemy.generate_enemy()
-            rooms.append(Room(enemy, random.choice(list(rooms_type.values()))))
+            rooms.append(Room(enemy, random.choice(list(map_data['rooms']))))
         else:
-            rooms.append(Room(None, random.choice(list(rooms_type.values()))))
+            rooms.append(Room(None, random.choice(list(map_data['rooms']))))
 
     return rooms

@@ -1,8 +1,7 @@
-from base import probability
+from base import probability, load_json
 from cfg import RED, GREEN, RESET
 from enemy.enemy import Enemy
 from game_map.game_map import show_position_on_map
-from game_map.map_data import map_ents
 from game_map.room import Room
 from player.player import Player
 
@@ -104,7 +103,7 @@ class PlayerController:
             if enemy.entity.health == 0:
                 print(f'Вы одержали победу над противником "{enemy.entity.name}"! {enemy.entity.death_description}')
                 self.rooms_list[self.current_room].enemy = None
-                self.game_map[self.current_room] = map_ents['empty']
+                self.game_map[self.current_room] = load_json('game_map/map_data.json')['entities']['empty']
                 break
 
             self._attack(
@@ -156,6 +155,15 @@ class PlayerController:
             fill_color: str = GREEN,
             empty_color: str = RED
     ) -> None:
+        """
+
+        :param character:
+        :param length:
+        :param fill_color:
+        :param empty_color:
+        :return:
+        """
+
         ratio = character.entity.health / character.entity.max_health if character.entity.max_health > 0 else 0
         filled = int(length * ratio)
         empty = length - filled

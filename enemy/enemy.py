@@ -1,7 +1,7 @@
 import random
 
 from armor import Armor
-from .enemy_data import *
+from base import load_json
 from entity import Entity
 from weapon import Weapon
 
@@ -13,15 +13,8 @@ class Enemy:
         self.weapon = None
 
     def generate_enemy(self):
-        self.entity = Entity(random.choice(list(enemy_type.values())))
-        self.armor = Armor(random.choice(list(enemy_armor.values())))
-        self.weapon = Weapon(random.choice(list(enemy_weapon.values())))
+        enemy_data = load_json('enemy/enemy_data.json')
+        self.entity = Entity(random.choice(list(enemy_data['type'])))
+        self.armor = Armor(random.choice(list(enemy_data['armor'])))
+        self.weapon = Weapon(random.choice(list(enemy_data['weapon'])))
 
-
-# x = Enemy()
-# x.generate_enemy()
-# print(x.__dict__)
-#
-# print(x.entity.__dict__)
-# print(x.armor.__dict__)
-# print(x.weapon.__dict__)

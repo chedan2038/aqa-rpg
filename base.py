@@ -1,3 +1,4 @@
+import json
 import random
 
 
@@ -9,3 +10,8 @@ def probability(p: int) -> bool:
     """
     p = p / 100
     return random.random() < p
+
+
+def load_json(path: str) -> dict:
+    with open(path, encoding='utf-8') as file:
+        return json.load(file)
