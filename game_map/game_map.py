@@ -2,18 +2,20 @@ from base import probability, load_json
 from cfg import RED, GREEN, RESET
 
 
-def map_generator(l=3, ep=40) -> list:
+def map_generator(l=5, e=40) -> list:
     """
-    :param l: кол-во комнат без учета входа и выхода
-    :param ep: вероятность появления противника
-    :return:
+    Генерирует карту подземелья.
+
+    :param l: Кол-во комнат без учета входа и выхода.
+    :param e: Вероятность появления противника.
+    :return: Последовательность комнат.
     """
 
     map_data = load_json('game_map/map_data.json')
     current_map = [map_data['base']['start'], map_data['base']['exit']]
 
     for i in range(l):
-        if probability(ep):
+        if probability(e):
             current_map.insert(-1, map_data['entities']['enemy'])
         else:
             current_map.insert(-1, map_data['entities']['empty'])
@@ -21,7 +23,14 @@ def map_generator(l=3, ep=40) -> list:
     return current_map
 
 
-def show_position_on_map(game_map: list[str], current_room: int):
+def show_position_on_map(game_map: list[str], current_room: int) -> None:
+    """
+    Показывает текущее местоположение персонажа на карте.
+
+    :param game_map: Карта подземелья.
+    :param current_room: Текущая комната
+    """
+
     row1 = ''
     for tile in game_map:
         if tile == 'E':

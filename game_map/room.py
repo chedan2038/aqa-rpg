@@ -11,6 +11,13 @@ class Room:
 
 
 def room_generator(game_map: list) -> list[Room]:
+    """
+    Генерирует комнаты и их окружение исходя из карты.
+
+    :param game_map: Карта подземелья.
+    :return: Последовательность комнат.
+    """
+
     rooms = []
     map_data = load_json('game_map/map_data.json')
 

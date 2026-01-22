@@ -12,9 +12,6 @@ class Game:
     def run(self):
         print('\n')
         game_map = map_generator()
-        # print(map)
-        print('\n')
-
         rooms = room_generator(game_map)
         player = Player()
         player.generate_player()

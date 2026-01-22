@@ -8,7 +8,7 @@ from player_controller import PlayerController
 
 
 def test_map_generation():
-    game_map = map_generator(l=1, ep=100)
+    game_map = map_generator(l=1, e=100)
     assert game_map == ['St', 'E', 'Ex']
 
 

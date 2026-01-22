@@ -1,9 +1,9 @@
 import random
 
-from armor import Armor
+from attributes.armor import Armor
+from attributes.properties import Properties
+from attributes.weapon import Weapon
 from base import load_json
-from properties import Properties
-from weapon import Weapon
 
 
 class Enemy:
@@ -13,8 +13,12 @@ class Enemy:
         self.weapon = None
 
     def generate_enemy(self):
+        """
+         Наделяет вражину случайными свойствами, броней и оружием.
+         (Не путать с игроком - это другое..)
+        """
+
         enemy_data = load_json('enemy/enemy_data.json')
         self.properties = Properties(random.choice(list(enemy_data['type'])))
         self.armor = Armor(random.choice(list(enemy_data['armor'])))
         self.weapon = Weapon(random.choice(list(enemy_data['weapon'])))
-

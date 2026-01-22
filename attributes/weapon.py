@@ -4,4 +4,3 @@ class Weapon:
         self.damage = weapon['damage']
         self.description = weapon['description']
         self.hitting_chance = weapon['hitting_chance']
-
