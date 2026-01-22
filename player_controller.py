@@ -42,7 +42,7 @@ class PlayerController:
         if player_action.isdigit() and int(player_action) in available:
             available[int(player_action)][1]()
         else:
-            print(f'Нет такого действия, {self.player.properties.name}.\nНа чем мы остановились? Ах, да...\n')
+            print(f'\nНет такого действия, {self.player.properties.name}.\nНа чем мы остановились? Ах, да...')
 
     def _available_actions(self) -> dict:
         """
