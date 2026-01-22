@@ -18,8 +18,8 @@ class Game:
         player_controller = PlayerController(rooms, player, game_map, self)
 
         print(f'Вы: "{player.properties.name}"')
-        print(f'В ваших руках: "{player.weapon.description}"')
-        print(f'На вас: "{player.armor.description}"')
+        print(f'В ваших руках: {player.weapon.description}')
+        print(f'На вас: {player.armor.description}')
 
         while self.game_status:
             player_controller.controller()
