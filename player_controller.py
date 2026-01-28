@@ -1,9 +1,9 @@
-from base import probability, load_json
-from cfg import RED, GREEN, RESET
-from enemy.enemy import Enemy
+from base import probability
+from cfg import RED, GREEN, RESET, ACTION_START_INDEX, DEFAULT_HP_BAR_LENGTH, EMPTY_ROOM
+from characters.enemy.enemy import Enemy
+from characters.player.player import Player
 from game_map.game_map import show_position_on_map
 from game_map.room import Room
-from player.player import Player
 
 
 class PlayerController:
@@ -34,8 +34,8 @@ class PlayerController:
 
         print('\nДоступные действия:')
         available = self._available_actions()
-        for k, v in available.items():
-            print(f'    {k}. {v[0]}')
+        for key, value in available.items():
+            print(f'    {key}. {value[0]}')
 
         player_action = input()
 
@@ -66,7 +66,7 @@ class PlayerController:
             available_actions.append(("Пойти дальше", self._move_forward))
             available_actions.append(("Вернутся назад", self._move_back))
 
-        return {k: v for k, v in enumerate(available_actions, 1)}
+        return {key: value for key, value in enumerate(available_actions, ACTION_START_INDEX)}
 
     def _move_forward(self) -> None:
         """
@@ -125,7 +125,7 @@ class PlayerController:
                 print(
                     f'Вы одержали победу над противником "{enemy.properties.name}"! {enemy.properties.death_description}')
                 self.rooms_list[self.current_room].enemy = None
-                self.game_map[self.current_room] = load_json('game_map/map_data.json')['entities']['empty']
+                self.game_map[self.current_room] = EMPTY_ROOM
                 break
 
             self._attack(
@@ -158,41 +158,44 @@ class PlayerController:
         """
         Проводится атака с учетом характеристик снаряжения персонажей.
 
-        :param attacker:
-        :param defender:
-        :param attack_msg:
-        :param hit_msg_1:
-        :param hit_msg_2:
-        :param fail_msg:
-        :param dodge_msg:
+        :param attacker: Нападающий
+        :param defender: Защищающийся
+        :param attack_msg: Сообщение перед атакой
+        :param hit_msg_1: Сообщение успешного попадания_1
+        :param hit_msg_2: Сообщение успешного попадания_2
+        :param fail_msg: Сообщение атака без урона
+        :param dodge_msg: Сообщение успешного уклонения
         :return:
         """
 
         print(attack_msg)
-        if probability(attacker.weapon.hitting_chance):
-            if attacker.weapon.damage > defender.armor.protection:
-                damage = attacker.weapon.damage - defender.armor.protection
-                defender.properties.health = max(defender.properties.health - damage, 0)
-                print(f'{hit_msg_1} "{damage}" {hit_msg_2}')
-            elif attacker.weapon.damage < defender.armor.protection:
-                print(fail_msg)
-        else:
+
+        if not probability(attacker.weapon.hitting_chance):
             print(dodge_msg)
+            return
+
+        damage = attacker.weapon.damage - defender.armor.protection
+
+        if damage > 0:
+            defender.properties.health = max(defender.properties.health - damage, 0)
+            print(f'{hit_msg_1} "{damage}" {hit_msg_2}')
+        else:
+            print(fail_msg)
 
     @staticmethod
     def _hp_bar(
             character: Player | Enemy,
-            length: int = 20,
+            length: int = DEFAULT_HP_BAR_LENGTH,
             fill_color: str = GREEN,
             empty_color: str = RED
     ) -> None:
 
         """
         Выводит полоску HP
-        :param character:
-        :param length:
-        :param fill_color:
-        :param empty_color:
+        :param character: Персонаж
+        :param length: Длина полоски
+        :param fill_color: Цвет полоски
+        :param empty_color: Цвет заполнения
         """
 
         ratio = character.properties.health / character.properties.max_health if character.properties.max_health > 0 else 0

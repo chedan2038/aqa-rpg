@@ -1,6 +1,8 @@
 import json
 import random
 
+from cfg import BASE_DIR
+
 
 def probability(p: int) -> bool:
     """
@@ -16,9 +18,9 @@ def probability(p: int) -> bool:
 
 def load_json(path: str) -> dict:
     """
-    :param path:
+    :param path: путь
     :return: Данные из json.
     """
 
-    with open(path, encoding='utf-8') as file:
+    with open(BASE_DIR / path, encoding='utf-8') as file:
         return json.load(file)

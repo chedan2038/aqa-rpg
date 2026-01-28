@@ -21,7 +21,4 @@ class Properties:
         :return: Случайное значение свойства из словаря характеристик.
         """
 
-        if isinstance(properties[attr], list):
-            return random.choice(properties[attr])
-        else:
-            return properties[attr]
+        return random.choice(properties[attr]) if isinstance(properties[attr], list) else properties[attr]

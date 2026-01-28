@@ -1,7 +1,8 @@
 import random
 
 from base import load_json
-from enemy.enemy import Enemy
+from cfg import ENEMY_ROOM
+from characters.enemy.enemy import Enemy
 
 
 class Room:
@@ -21,10 +22,10 @@ def room_generator(game_map: list) -> list[Room]:
     rooms = []
     map_data = load_json('game_map/map_data.json')
 
-    for r in game_map:
-        if r == map_data['entities']['enemy']:
+    for room in game_map:
+        if room == ENEMY_ROOM:
             enemy = Enemy()
-            enemy.generate_enemy()
+            enemy.generate_character()
             rooms.append(Room(enemy, random.choice(list(map_data['rooms']))))
         else:
             rooms.append(Room(None, random.choice(list(map_data['rooms']))))

@@ -1,5 +1,8 @@
-class Armor:
-    def __init__(self, armor: dict):
-        self.name = armor['name']
-        self.description = armor['description']
-        self.protection = armor['protection']
+from dataclasses import dataclass
+
+from attributes.item import Item
+
+
+@dataclass
+class Armor(Item):
+    protection: int

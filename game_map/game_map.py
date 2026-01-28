@@ -1,24 +1,24 @@
-from base import probability, load_json
-from cfg import RED, GREEN, RESET
+from base import probability
+from cfg import RED, GREEN, RESET, DEFAULT_ROOMS_COUNT, DEFAULT_ENEMY_CHANCE, START_ROOM, EXIT_ROOM, ENEMY_ROOM, \
+    EMPTY_ROOM
 
 
-def map_generator(l=5, e=40) -> list:
+def map_generator(length: int = DEFAULT_ROOMS_COUNT, enemy_chance: int = DEFAULT_ENEMY_CHANCE) -> list:
     """
     Генерирует карту подземелья.
 
-    :param l: Кол-во комнат без учета входа и выхода.
-    :param e: Вероятность появления противника.
+    :param length: Кол-во комнат без учета входа и выхода.
+    :param enemy_chance: Вероятность появления противника.
     :return: Последовательность комнат.
     """
 
-    map_data = load_json('game_map/map_data.json')
-    current_map = [map_data['base']['start'], map_data['base']['exit']]
+    current_map = [START_ROOM, EXIT_ROOM]
 
-    for i in range(l):
-        if probability(e):
-            current_map.insert(-1, map_data['entities']['enemy'])
+    for room_count in range(length):
+        if probability(enemy_chance):
+            current_map.insert(-1, ENEMY_ROOM)
         else:
-            current_map.insert(-1, map_data['entities']['empty'])
+            current_map.insert(-1, EMPTY_ROOM)
 
     return current_map
 
@@ -31,13 +31,13 @@ def show_position_on_map(game_map: list[str], current_room: int) -> None:
     :param current_room: Текущая комната
     """
 
-    row1 = ''
+    row = ''
     for tile in game_map:
-        if tile == 'E':
-            row1 += f'[{RED}{tile}{RESET}]  '
+        if tile == ENEMY_ROOM:
+            row += f'[{RED}{tile}{RESET}]  '
         else:
-            row1 += f'[{tile}]  '
-    print(row1.rstrip())
+            row += f'[{tile}]  '
+    print(row.rstrip())
 
     pointer_row = ''
     for idx, tile in enumerate(game_map):
